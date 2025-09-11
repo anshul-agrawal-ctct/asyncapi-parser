@@ -187,36 +187,43 @@ class HTMLDocGenerator:
 
     def generate(self, output_file: str):
         env = Environment(loader=FileSystemLoader("."))
-        template = env.from_string("""<!DOCTYPE html>
-<html>
+        template = env.from_string("""<!DOCTYPE html><html>
 <head>
     <meta charset="UTF-8">
     <title>{{ info.title }} - API Docs</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="p-4">
-    <h1>{{ info.title }} <small class="text-muted">v{{ info.version }}</small></h1>
-    <p>{{ info.description }}</p>
+<body class="p-5">
+    <h1>{{ info.title }} <small class="text-muted">{{ info.version }}</small></h1>
+    <p class="text-secondary-emphasis">{{ info.description }}</p>
 
-    <h2>Servers</h2>
-    <ul>
+    <p class="fs-2 text-dark-emphasis mt-5">Servers</p>
+    <ul class="list-group">
     {% for name, srv in servers.items() %}
-        <li><b>{{ srv.title }}</b>: {{ srv.host }} ({{ srv.protocol }} v{{ srv.protocolVersion }})</li>
+        <li class="list-group-item p-4 bg-light">
+            <span class="fs-5 text-primary-emphasis">{{ srv.protocol }}://{{ srv.host }}/</span>
+            <b>
+                <span class='text-white bg-success p-1 rounded-1'>{{ srv.protocol }} {{ srv.protocolVersion }}</span>
+                <span class='text-white bg-primary p-1 rounded-1'>{{ srv.title }}</span>
+            </b>
+        </li>
     {% endfor %}
     </ul>
 
-    <h2>Operations</h2>
+    <p class="fs-2 text-dark-emphasis mt-5">Operations</p>
     {% for op in operations %}
-        <div class="card mb-3 shadow-sm">
+        <div class="card mb-3 shadow-sm bg-light">
             <div class="card-body">
-                <h5 class="card-title">{{ op.operationId }}</h5>
-                <p><b>Action:</b> {{ op.action }} | <b>Channel:</b> {{ op.channel }}</p>
-
+                <h5 class="card-title mt-2">{{ op.operationId }}</h5>
+                <p class="mt-3">
+                    <span class='text-white bg-primary p-1 rounded-1 me-3'><b>{{ op.action }}</b></span>
+                    {{ op.channel }}
+                </p>
                 <h6>Messages</h6>
-                <ul>
+                <ul class="list-group">
                 {% for m in op.messages %}
-                    <li>
-                        <b>{{ m.name }}</b> ({{ m.schemaFormat }}) → {{ m.schema }}
+                    <li class="list-group-item p-4">
+                        <span class='text-white bg-warning p-1 rounded-1'><b>{{ m.name }}</b></span>
                         {% if m.fbs_def %}
                             <div class="ms-3 mt-2">
                                 {% if m.fbs_def.structs %}
@@ -225,7 +232,7 @@ class HTMLDocGenerator:
                                         <b>{{ sname }}</b>
                                         <ul>
                                             {% for fname, fdata in sfields.items() %}
-                                                <li>{{ fname }} : {{ fdata.type }} (default={{ fdata.default }}, meta={{ fdata.metadata }})</li>
+                                                <li><b>{{ fname }}</b> : {{ fdata.type }}</li>
                                             {% endfor %}
                                         </ul>
                                     {% endfor %}
@@ -237,7 +244,7 @@ class HTMLDocGenerator:
                                         <b>{{ tname }}</b>
                                         <ul>
                                             {% for fname, fdata in tfields.items() %}
-                                                <li>{{ fname }} : {{ fdata.type }} (default={{ fdata.default }}, meta={{ fdata.metadata }})</li>
+                                                <li><b>{{ fname }}</b> : {{ fdata.type }}</li>
                                             {% endfor %}
                                         </ul>
                                     {% endfor %}
@@ -297,8 +304,7 @@ def generate_all(asyncapi_path: str, fbs_dir: str, output_dir: str):
     # index.html
     index_path = os.path.join(output_dir, "index.html")
     with open(index_path, "w", encoding="utf-8") as f:
-        f.write("""<!DOCTYPE html>
-<html>
+        f.write("""<!DOCTYPE html><html>
 <head>
     <meta charset="UTF-8">
     <title>API Documentation Index</title>
