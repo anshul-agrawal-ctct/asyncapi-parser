@@ -304,21 +304,59 @@ def generate_all(asyncapi_path: str, fbs_dir: str, output_dir: str):
     # index.html
     index_path = os.path.join(output_dir, "index.html")
     with open(index_path, "w", encoding="utf-8") as f:
-        f.write("""<!DOCTYPE html><html>
+        f.write("""<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>API Documentation Index</title>
+    <title>API Documentation</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            height: 100vh;
+            border-right: 1px solid #dee2e6;
+        }
+        .sidebar .list-group-item {
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
-<body class="p-4">
-    <div class="container">
-        <h1 class="mb-4">API Documentation Index</h1>
-        <div class="list-group">
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+
+            <!-- Sidebar -->
+            <div class="col-3 col-md-2 bg-light sidebar p-3">
+                <h4 class="mb-4">APIs</h4>
+                <div class="list-group">
 """)
         for name, filename in generated_files:
-            f.write(f'            <a href="{filename}" class="list-group-item list-group-item-action">{name}</a>\n')
+            f.write(f'            <button class="list-group-item list-group-item-action" onclick="loadPage(\'{filename}\')">{name}</button>\n')
         f.write("""        </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-9 col-md-10 p-0">
+                <iframe id="contentFrame" src="" title="API Documentation"></iframe>
+            </div>
+        </div>
     </div>
+
+    <script>
+        function loadPage(url) {
+            document.getElementById('contentFrame').src = url;
+        }
+    </script>
 </body>
 </html>""")
     logging.info(f"📑 Index generated: {index_path}")
