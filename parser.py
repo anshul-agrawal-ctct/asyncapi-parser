@@ -137,6 +137,7 @@ class AsyncAPIParser:
         ops = []
         for op_name, op in self.data.get("operations", {}).items():
             action = op.get("action")
+            action = action.capitalize()
             channel_ref = op.get("channel", {}).get("$ref")
             channel_name = None
             messages = []
@@ -219,34 +220,54 @@ class HTMLDocGenerator:
                     <span class='text-white bg-primary p-1 rounded-1 me-3'><b>{{ op.action }}</b></span>
                     {{ op.channel }}
                 </p>
-                <h6>Messages</h6>
+                <h6 style="font-weight: normal;">Accepts the following message:</h6>
                 <ul class="list-group">
                 {% for m in op.messages %}
                     <li class="list-group-item p-4">
-                        <span class='text-white bg-warning p-1 rounded-1'><b>{{ m.name }}</b></span>
+                        <span>Message ID</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>{{ m.name }}</b></span>
                         {% if m.fbs_def %}
-                            <div class="ms-3 mt-2">
+                            <div class="ms-3 mt-2 pt-3">
                                 {% if m.fbs_def.structs %}
-                                    <h6>Structs</h6>
                                     {% for sname, sfields in m.fbs_def.structs.items() %}
-                                        <b>{{ sname }}</b>
-                                        <ul>
-                                            {% for fname, fdata in sfields.items() %}
-                                                <li><b>{{ fname }}</b> : {{ fdata.type }}</li>
-                                            {% endfor %}
-                                        </ul>
+                                        <h6>{{ sname }}</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for fname, fdata in sfields.items() %}
+                                                <tr>
+                                                <td style="width: 250px;"><i>{{ fname }}</i></td>
+                                                <td><span class="fw-bold text-success">{{ fdata.type }}</span></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     {% endfor %}
                                 {% endif %}
 
                                 {% if m.fbs_def.tables %}
-                                    <h6>Tables</h6>
                                     {% for tname, tfields in m.fbs_def.tables.items() %}
-                                        <b>{{ tname }}</b>
-                                        <ul>
-                                            {% for fname, fdata in tfields.items() %}
-                                                <li><b>{{ fname }}</b> : {{ fdata.type }}</li>
-                                            {% endfor %}
-                                        </ul>
+                                        <h6>{{ tname }}</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for fname, fdata in tfields.items() %}
+                                                <tr>
+                                                <td style="width: 250px;"><i>{{ fname }}</i></td>
+                                                <td><span class="fw-bold text-success">{{ fdata.type }}</span></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
                                     {% endfor %}
                                 {% endif %}
                             </div>
@@ -262,8 +283,9 @@ class HTMLDocGenerator:
 
         info = self.parser.data.get("info", {})
         servers = self.parser.data.get("servers", {})
+        for key in servers:
+            servers[key]['protocol'] = servers[key]['protocol'].upper()
         operations = self.parser.get_operations(self.base_fbs_dir)
-
         html = template.render(info=info, servers=servers, operations=operations)
         with open(output_file, "w", encoding="utf-8") as f:
             f.write(html)
@@ -338,11 +360,16 @@ def generate_all(asyncapi_path: str, fbs_dir: str, output_dir: str):
             <!-- Sidebar -->
             <div class="col-3 col-md-2 bg-light sidebar p-3">
                 <h4 class="mb-4">APIs</h4>
-                <div class="list-group">
+                <!-- Search Bar -->
+                <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search APIs...">
+                <!-- List Group -->
+                <div class="list-group" id="apiList">
 """)
         for name, filename in generated_files:
             f.write(f'            <button class="list-group-item list-group-item-action" onclick="loadPage(\'{filename}\')">{name}</button>\n')
         f.write("""        </div>
+                <!-- No results message -->
+                <div id="noResults" class="text-muted small mt-2 d-none">No APIs found.</div>
             </div>
 
             <!-- Main Content -->
@@ -356,6 +383,39 @@ def generate_all(asyncapi_path: str, fbs_dir: str, output_dir: str):
         function loadPage(url) {
             document.getElementById('contentFrame').src = url;
         }
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('searchInput');
+            const list = document.getElementById('apiList');
+            const noResults = document.getElementById('noResults');
+
+            if (!input || !list) {
+                console.error('Search input or api list not found in DOM.');
+                return;
+            }
+
+            // collect items once for static list; if your list is dynamic, re-query inside the handler
+            const items = Array.from(list.querySelectorAll('.list-group-item'));
+            console.log('Found API items:', items.length);
+
+            input.addEventListener('input', function (e) {
+                const q = e.target.value.trim().toLowerCase();
+                let visible = 0;
+
+                items.forEach(item => {
+                    // use textContent so anchors/buttons also work
+                    const text = item.textContent.trim().toLowerCase();
+                    if (q === '' || text.includes(q)) {
+                        item.classList.remove('d-none');
+                        visible++;
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                // show or hide "no results"
+                noResults.classList.toggle('d-none', visible > 0);
+            });
+        });
     </script>
 </body>
 </html>""")
