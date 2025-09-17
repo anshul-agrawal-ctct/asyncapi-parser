@@ -325,7 +325,7 @@ def generate_all(asyncapi_path: str, fbs_dir: str, output_dir: str):
     for asyncapi_file in asyncapi_files:
         try:
             base_name = os.path.splitext(os.path.basename(asyncapi_file))[0]
-            output_file = os.path.join(output_dir, f"{base_name}.html")
+            output_file = os.path.join(output_dir, f"files/{base_name}.html")
 
             asyncapi_parser = AsyncAPIParser(asyncapi_file)
             if asyncapi_parser.validate():
@@ -335,103 +335,11 @@ def generate_all(asyncapi_path: str, fbs_dir: str, output_dir: str):
         except Exception as e:
             logging.error(f"Failed to process {asyncapi_file}: {e}")
 
-    # index.html
-    index_path = os.path.join(output_dir, "index.html")
-    with open(index_path, "w", encoding="utf-8") as f:
-        f.write("""<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>API Documentation</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            height: 100vh;
-            overflow: hidden;
-        }
-        .sidebar {
-            height: 100vh;
-            border-right: 1px solid #dee2e6;
-        }
-        .sidebar .list-group-item {
-            border: none;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid h-100">
-        <div class="row h-100">
-
-            <!-- Sidebar -->
-            <div class="col-3 col-md-2 bg-light sidebar p-3">
-                <h4 class="mb-4">APIs</h4>
-                <!-- Search Bar -->
-                <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search APIs...">
-                <!-- List Group -->
-                <div class="list-group" id="apiList">
-""")
-        for name, filename in generated_files:
-            f.write(f'            <button class="list-group-item list-group-item-action" onclick="loadPage(\'{filename}\')">{name}</button>\n')
-        f.write("""        </div>
-                <!-- No results message -->
-                <div id="noResults" class="text-muted small mt-2 d-none">No APIs found.</div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-9 col-md-10 p-0">
-                <iframe id="contentFrame" src="" title="API Documentation"></iframe>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function loadPage(url) {
-            document.getElementById('contentFrame').src = url;
-        }
-        document.addEventListener('DOMContentLoaded', function () {
-            const input = document.getElementById('searchInput');
-            const list = document.getElementById('apiList');
-            const noResults = document.getElementById('noResults');
-
-            if (!input || !list) {
-                console.error('Search input or api list not found in DOM.');
-                return;
-            }
-
-            // collect items once for static list; if your list is dynamic, re-query inside the handler
-            const items = Array.from(list.querySelectorAll('.list-group-item'));
-            console.log('Found API items:', items.length);
-
-            input.addEventListener('input', function (e) {
-                const q = e.target.value.trim().toLowerCase();
-                let visible = 0;
-
-                items.forEach(item => {
-                    // use textContent so anchors/buttons also work
-                    const text = item.textContent.trim().toLowerCase();
-                    if (q === '' || text.includes(q)) {
-                        item.classList.remove('d-none');
-                        visible++;
-                    } else {
-                        item.classList.add('d-none');
-                    }
-                });
-
-                // show or hide "no results"
-                noResults.classList.toggle('d-none', visible > 0);
-            });
-        });
-    </script>
-</body>
-</html>""")
-    logging.info(f"📑 Index generated: {index_path}")
+    # files.json
+    json_path = os.path.join(output_dir, "files.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(generated_files, f)
+    logging.info(f"📑 JSON file generated: {json_path}")
 
 
 # ---------------- Entry Point ----------------
