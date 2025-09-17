@@ -140,11 +140,13 @@ class AsyncAPIParser:
             action = action.capitalize()
             channel_ref = op.get("channel", {}).get("$ref")
             channel_name = None
+            channel_desc = None
             messages = []
 
             if channel_ref:
                 channel_obj = self.resolve_ref(channel_ref)
                 channel_name = channel_ref.split("/")[-1]
+                channel_desc = channel_obj['description']
                 if channel_obj and "messages" in channel_obj:
                     for msg_name, msg_obj in channel_obj["messages"].items():
                         schema_val = None
@@ -175,6 +177,7 @@ class AsyncAPIParser:
                 "action": action,
                 "channel": channel_name,
                 "channel_ref": channel_ref,
+                "channel_desc": channel_desc,
                 "messages": messages,
             })
         return ops
@@ -219,12 +222,21 @@ class HTMLDocGenerator:
                 <p class="mt-3">
                     <span class='text-white bg-primary p-1 rounded-1 me-3'><b>{{ op.action }}</b></span>
                     {{ op.channel }}
+                    <div>
+                        <h6>Description: </h6>
+                        {{ op.channel_desc }}              
+                    </div>
                 </p>
-                <h6 style="font-weight: normal;">Accepts the following message:</h6>
+                <h6>Accepts the following message:</h6>
                 <ul class="list-group">
                 {% for m in op.messages %}
                     <li class="list-group-item p-4">
-                        <span>Message ID</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>{{ m.name }}</b></span>
+                        <div class="m-2">
+                            <span>Schema</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>{{ m.name }}</b></span>
+                        </div>
+                        <div class="m-2">
+                            <span>Schema Format</span><span class='text-white bg-info ms-3 p-1 rounded-1'><b>{{ m.schemaFormat }}</b></span>
+                        </div>
                         {% if m.fbs_def %}
                             <div class="ms-3 mt-2 pt-3">
                                 {% if m.fbs_def.structs %}
