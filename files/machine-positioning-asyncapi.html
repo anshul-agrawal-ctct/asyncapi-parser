@@ -1,0 +1,761 @@
+<!DOCTYPE html><html>
+<head>
+    <meta charset="UTF-8">
+    <title>Machine Positioning Source - API Docs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-5">
+    <h1>Machine Positioning Source <small class="text-muted">0.0.1</small></h1>
+    <p class="text-secondary-emphasis">This API is used for machine positioning information related messages.
+</p>
+
+    <p class="fs-2 text-dark-emphasis mt-5">Servers</p>
+    <ul class="list-group">
+    
+        <li class="list-group-item p-4 bg-light">
+            <span class="fs-5 text-primary-emphasis">MQTT://server.url/</span>
+            <b>
+                <span class='text-white bg-success p-1 rounded-1'>MQTT 5.0</span>
+                <span class='text-white bg-primary p-1 rounded-1'>RA-API</span>
+            </b>
+        </li>
+    
+    </ul>
+
+    <p class="fs-2 text-dark-emphasis mt-5">Operations</p>
+    
+        <div class="card mb-3 shadow-sm bg-light">
+            <div class="card-body">
+                <h5 class="card-title mt-2">onVerticalGuidanceReceived</h5>
+                <p class="mt-3">
+                    <span class='text-white bg-primary p-1 rounded-1 me-3'><b>Receive</b></span>
+                    verticalGuidance
+                    <div>
+                        <h6>Description: </h6>
+                        Channel used to provide generated Design Planes and cut / fills for vertical guidance
+              
+                    </div>
+                </p>
+                <h6>Accepts the following message:</h6>
+                <ul class="list-group">
+                
+                    <li class="list-group-item p-4">
+                        <div class="m-2">
+                            <span>Schema</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>verticalGuidance</b></span>
+                        </div>
+                        <div class="m-2">
+                            <span>Schema Format</span><span class='text-white bg-info ms-3 p-1 rounded-1'><b>fbs</b></span>
+                        </div>
+                        
+                            <div class="ms-3 mt-2 pt-3">
+                                
+                                    
+                                        <h6>DesignPlane</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>normal</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>origin</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                
+
+                                
+                                    
+                                        <h6>VerticalGuidance</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>request_time_stamp</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>left_target</i></td>
+                                                <td><span class="fw-bold text-success">Target</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>right_target</i></td>
+                                                <td><span class="fw-bold text-success">Target</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>target_cross_slope</i></td>
+                                                <td><span class="fw-bold text-success">double</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>left_cut_fill</i></td>
+                                                <td><span class="fw-bold text-success">double</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>right_cut_fill</i></td>
+                                                <td><span class="fw-bold text-success">double</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>design_plane_near</i></td>
+                                                <td><span class="fw-bold text-success">DesignPlane</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>design_plane_rear</i></td>
+                                                <td><span class="fw-bold text-success">DesignPlane</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>design_plane_far</i></td>
+                                                <td><span class="fw-bold text-success">DesignPlane</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                
+                            </div>
+                        
+                    </li>
+                
+                </ul>
+            </div>
+        </div>
+    
+        <div class="card mb-3 shadow-sm bg-light">
+            <div class="card-body">
+                <h5 class="card-title mt-2">machineConfiguration</h5>
+                <p class="mt-3">
+                    <span class='text-white bg-primary p-1 rounded-1 me-3'><b>Send</b></span>
+                    machineConfiguration
+                    <div>
+                        <h6>Description: </h6>
+                        Channel used to post the machine configuration for O&S to display the machine properly on the operator display.
+              
+                    </div>
+                </p>
+                <h6>Accepts the following message:</h6>
+                <ul class="list-group">
+                
+                    <li class="list-group-item p-4">
+                        <div class="m-2">
+                            <span>Schema</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>machineConfiguration</b></span>
+                        </div>
+                        <div class="m-2">
+                            <span>Schema Format</span><span class='text-white bg-info ms-3 p-1 rounded-1'><b>fbs</b></span>
+                        </div>
+                        
+                            <div class="ms-3 mt-2 pt-3">
+                                
+
+                                
+                                    
+                                        <h6>MachineConfiguration</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>configuration_id</i></td>
+                                                <td><span class="fw-bold text-success">uint8</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>attachment_width</i></td>
+                                                <td><span class="fw-bold text-success">double</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>configuration</i></td>
+                                                <td><span class="fw-bold text-success">MachineSpecificConfiguration</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                
+                            </div>
+                        
+                    </li>
+                
+                </ul>
+            </div>
+        </div>
+    
+        <div class="card mb-3 shadow-sm bg-light">
+            <div class="card-body">
+                <h5 class="card-title mt-2">pose</h5>
+                <p class="mt-3">
+                    <span class='text-white bg-primary p-1 rounded-1 me-3'><b>Send</b></span>
+                    pose
+                    <div>
+                        <h6>Description: </h6>
+                        This channel is used to publish positions of the various parts of the machine for guidance and rendering.
+Published at 10Hz. Contains the merged pose of rigid body elements with site relative pose,
+along with extra fixed points from the measure up, like left and right 
+blade tips. Has a machine type generic section for platform and attachment 
+positions and blade tips and a machine specific section, with positions for 
+extra ridged bodies, like boom, c-frame etc. Also contains a position ID 
+(or epoch) for the MPS and SR positions and measureup ID used to calculate
+each positon 
+message
+              
+                    </div>
+                </p>
+                <h6>Accepts the following message:</h6>
+                <ul class="list-group">
+                
+                    <li class="list-group-item p-4">
+                        <div class="m-2">
+                            <span>Schema</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>pose</b></span>
+                        </div>
+                        <div class="m-2">
+                            <span>Schema Format</span><span class='text-white bg-info ms-3 p-1 rounded-1'><b>fbs</b></span>
+                        </div>
+                        
+                            <div class="ms-3 mt-2 pt-3">
+                                
+
+                                
+                                    
+                                        <h6>DozerMachinePose</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>c_frame</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>push_arm</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                        <h6>ExcavatorMachinePose</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>boom</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>va_boom</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>stick</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>coupler</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>slew_angle</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                        <h6>MachinePose</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>pose_id</i></td>
+                                                <td><span class="fw-bold text-success">uint8</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>pose_time_stamp</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>left_blade_tip</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>right_blade_tip</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>attachment</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>platform</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>llh</i></td>
+                                                <td><span class="fw-bold text-success">Core</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>machine_specific_pose</i></td>
+                                                <td><span class="fw-bold text-success">MachineSpecificPose</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                
+                            </div>
+                        
+                    </li>
+                
+                </ul>
+            </div>
+        </div>
+    
+        <div class="card mb-3 shadow-sm bg-light">
+            <div class="card-body">
+                <h5 class="card-title mt-2">controlsState</h5>
+                <p class="mt-3">
+                    <span class='text-white bg-primary p-1 rounded-1 me-3'><b>Send</b></span>
+                    controlsState
+                    <div>
+                        <h6>Description: </h6>
+                        The current controls state reported by Machine Positioning. Used by O&S to inform the 
+operator of the current state of controls.
+              
+                    </div>
+                </p>
+                <h6>Accepts the following message:</h6>
+                <ul class="list-group">
+                
+                    <li class="list-group-item p-4">
+                        <div class="m-2">
+                            <span>Schema</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>controlsState</b></span>
+                        </div>
+                        <div class="m-2">
+                            <span>Schema Format</span><span class='text-white bg-info ms-3 p-1 rounded-1'><b>fbs</b></span>
+                        </div>
+                        
+                            <div class="ms-3 mt-2 pt-3">
+                                
+
+                                
+                                    
+                                        <h6>ExcavatorControlFunction</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>boom</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>attachment_curl</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>attachment_tilt</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>attachment_rotate</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>stick</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>two_piece_boom</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                        <h6>DozerControlFunction</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>lift</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>tilt</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                        <h6>MotorGraderControlFunction</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>left_lift</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>right_lift</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>sideshift</i></td>
+                                                <td><span class="fw-bold text-success">bool</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                        <h6>ControlFunctionState</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>machine_specific_function</i></td>
+                                                <td><span class="fw-bold text-success">MachineSpecificControlFunction</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>control_state</i></td>
+                                                <td><span class="fw-bold text-success">ControlState</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                        <h6>ControlsState</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>overall_state</i></td>
+                                                <td><span class="fw-bold text-success">ControlState</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>control_function_states</i></td>
+                                                <td><span class="fw-bold text-success">[ControlFunctionState]</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                
+                            </div>
+                        
+                    </li>
+                
+                </ul>
+            </div>
+        </div>
+    
+        <div class="card mb-3 shadow-sm bg-light">
+            <div class="card-body">
+                <h5 class="card-title mt-2">operatorAction</h5>
+                <p class="mt-3">
+                    <span class='text-white bg-primary p-1 rounded-1 me-3'><b>Send</b></span>
+                    operatorAction
+                    <div>
+                        <h6>Description: </h6>
+                        Channel used to publish information about operator actions.
+              
+                    </div>
+                </p>
+                <h6>Accepts the following message:</h6>
+                <ul class="list-group">
+                
+                    <li class="list-group-item p-4">
+                        <div class="m-2">
+                            <span>Schema</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>buttonAction</b></span>
+                        </div>
+                        <div class="m-2">
+                            <span>Schema Format</span><span class='text-white bg-info ms-3 p-1 rounded-1'><b>fbs</b></span>
+                        </div>
+                        
+                            <div class="ms-3 mt-2 pt-3">
+                                
+
+                                
+                                    
+                                        <h6>OperatorAction</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>action</i></td>
+                                                <td><span class="fw-bold text-success">Action</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                
+                            </div>
+                        
+                    </li>
+                
+                </ul>
+            </div>
+        </div>
+    
+        <div class="card mb-3 shadow-sm bg-light">
+            <div class="card-body">
+                <h5 class="card-title mt-2">machineInfo</h5>
+                <p class="mt-3">
+                    <span class='text-white bg-primary p-1 rounded-1 me-3'><b>Send</b></span>
+                    machineInfo
+                    <div>
+                        <h6>Description: </h6>
+                        This channel is used to publish general information about the machine.
+              
+                    </div>
+                </p>
+                <h6>Accepts the following message:</h6>
+                <ul class="list-group">
+                
+                    <li class="list-group-item p-4">
+                        <div class="m-2">
+                            <span>Schema</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>machineInfo</b></span>
+                        </div>
+                        <div class="m-2">
+                            <span>Schema Format</span><span class='text-white bg-info ms-3 p-1 rounded-1'><b>fbs</b></span>
+                        </div>
+                        
+                            <div class="ms-3 mt-2 pt-3">
+                                
+
+                                
+                                    
+                                        <h6>MachineInfo</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>identification_number</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>oem_name</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>model_name</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                
+                            </div>
+                        
+                    </li>
+                
+                </ul>
+            </div>
+        </div>
+    
+        <div class="card mb-3 shadow-sm bg-light">
+            <div class="card-body">
+                <h5 class="card-title mt-2">report</h5>
+                <p class="mt-3">
+                    <span class='text-white bg-primary p-1 rounded-1 me-3'><b>Send</b></span>
+                    report
+                    <div>
+                        <h6>Description: </h6>
+                        Channel used to publish the machine positioning source report, which contains general information
+about the source and its status.
+              
+                    </div>
+                </p>
+                <h6>Accepts the following message:</h6>
+                <ul class="list-group">
+                
+                    <li class="list-group-item p-4">
+                        <div class="m-2">
+                            <span>Schema</span><span class='text-white bg-warning ms-3 p-1 rounded-1'><b>report</b></span>
+                        </div>
+                        <div class="m-2">
+                            <span>Schema Format</span><span class='text-white bg-info ms-3 p-1 rounded-1'><b>fbs</b></span>
+                        </div>
+                        
+                            <div class="ms-3 mt-2 pt-3">
+                                
+
+                                
+                                    
+                                        <h6>MachinePositioningReport</h6>
+                                        <table class="table table-borderless">
+                                            <thead>
+                                                <tr>
+                                                <th style="width: 250px;">Field Name</th>
+                                                <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>uuid</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>name</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>manufacturer_name</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>manufacturer_code</i></td>
+                                                <td><span class="fw-bold text-success">uint</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>svg_icon</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>operator_ui_base_url</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>technician_ui_base_url</i></td>
+                                                <td><span class="fw-bold text-success">string</span></td>
+                                                </tr>
+                                                
+                                                <tr>
+                                                <td style="width: 250px;"><i>status</i></td>
+                                                <td><span class="fw-bold text-success">Status</span></td>
+                                                </tr>
+                                                
+                                            </tbody>
+                                        </table>
+                                    
+                                
+                            </div>
+                        
+                    </li>
+                
+                </ul>
+            </div>
+        </div>
+    
+</body>
+</html>
