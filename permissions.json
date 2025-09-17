@@ -1,0 +1,18 @@
+{
+  "CAT": {
+    "password": "CAT123",
+    "access": ["height-relative-asyncapi"]
+  },
+  "Trimble": {
+    "password": "Trimble123",
+    "access": ["machine-positioning-asyncapi", "op-and-site-asyncapi"]
+  },
+  "CTCT": {
+    "password": "CTCT123",
+    "access": ["height-relative-asyncapi", "machine-positioning-asyncapi", "op-and-site-asyncapi", "site-relative-asyncapi"]
+  },
+  "admin": {
+    "password": "Admin123",
+    "access": ["height-relative-asyncapi", "machine-positioning-asyncapi", "op-and-site-asyncapi", "site-relative-asyncapi"]
+  }
+}
