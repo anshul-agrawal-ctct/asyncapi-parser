@@ -4,6 +4,7 @@ import glob
 import json
 import yaml
 import logging
+import argparse
 from typing import Any, Dict, List, Optional
 from jinja2 import Environment, FileSystemLoader
 
@@ -46,12 +47,16 @@ class FBSParser:
         with open(self.file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
+        # Split into lines for sequential parsing
         lines = content.splitlines()
+
         current_doc: List[str] = []
 
         def consume_doc() -> str:
             nonlocal current_doc
-            doc = "\n".join(current_doc).strip() if current_doc else None
+            if not current_doc:
+                return None
+            doc = "\n".join(current_doc).strip()
             current_doc = []
             return doc
 
@@ -59,13 +64,13 @@ class FBSParser:
         while i < len(lines):
             line = lines[i].strip()
 
-            # --- Doc comments
+            # --- Doc comments (triple slash)
             if line.startswith("///"):
                 current_doc.append(line.lstrip("/ ").strip())
                 i += 1
                 continue
 
-            # --- Block comments
+            # --- Block comments (/* ... */)
             if line.startswith("/*"):
                 block = [line.lstrip("/* ").rstrip("*/").strip()]
                 while not lines[i].strip().endswith("*/"):
@@ -91,9 +96,10 @@ class FBSParser:
             if match := re.match(r"enum\s+(\w+)\s*:\s*(\w+)\s*{", line):
                 name, base_type = match.groups()
                 body, offset = self._collect_block(lines, i)
+                values = self._parse_enum_values(body)
                 self.data["enums"][name] = {
                     "base_type": base_type,
-                    "values": self._parse_enum_values(body),
+                    "values": values,
                     "doc": consume_doc(),
                 }
                 i = offset
@@ -104,7 +110,10 @@ class FBSParser:
                 name = match.group(1)
                 body, offset = self._collect_block(lines, i)
                 types = [t.strip() for t in body.split(",") if t.strip()]
-                self.data["unions"][name] = {"types": types, "doc": consume_doc()}
+                self.data["unions"][name] = {
+                    "types": types,
+                    "doc": consume_doc(),
+                }
                 i = offset
                 continue
 
@@ -112,8 +121,9 @@ class FBSParser:
             if match := re.match(r"struct\s+(\w+)\s*{", line):
                 name = match.group(1)
                 body, offset = self._collect_block(lines, i)
+                fields = self._parse_fields(body)
                 self.data["structs"][name] = {
-                    "fields": self._parse_fields(body),
+                    "fields": fields,
                     "doc": consume_doc(),
                 }
                 i = offset
@@ -123,8 +133,9 @@ class FBSParser:
             if match := re.match(r"table\s+(\w+)\s*{", line):
                 name = match.group(1)
                 body, offset = self._collect_block(lines, i)
+                fields = self._parse_fields(body)
                 self.data["tables"][name] = {
-                    "fields": self._parse_fields(body),
+                    "fields": fields,
                     "doc": consume_doc(),
                 }
                 i = offset
@@ -139,6 +150,7 @@ class FBSParser:
             i += 1
 
     def _collect_block(self, lines: List[str], start_idx: int) -> (str, int):
+        """Collect block between { ... } braces starting at start_idx."""
         content = []
         depth = 0
         i = start_idx
@@ -150,7 +162,7 @@ class FBSParser:
                 break
             i += 1
         body = "\n".join(content)
-        # Remove opening and closing braces
+        # Strip first line ("table X {" etc.) and closing brace
         body = re.sub(r"^[^{]*{", "", body, count=1, flags=re.S)
         body = re.sub(r"}[^}]*$", "", body, count=1, flags=re.S)
         return body.strip(), i + 1
@@ -169,21 +181,19 @@ class FBSParser:
         return values
 
     def _parse_fields(self, body: str) -> Dict[str, Dict[str, Any]]:
+        """Parse fields inside a struct or table, capture inline docs."""
         fields: Dict[str, Dict[str, Any]] = {}
         current_doc: List[str] = []
-
-        # Collect all local types
-        local_types = set(self.data["enums"].keys()) | set(self.data["structs"].keys()) | set(self.data["tables"].keys())
 
         for raw_line in body.splitlines():
             line = raw_line.strip()
 
-            # Triple slash doc
+            # Doc comments (triple slash)
             if line.startswith("///"):
                 current_doc.append(line.lstrip("/ ").strip())
                 continue
 
-            # Block doc inside fields
+            # Block comments inside fields
             if line.startswith("/*"):
                 block_line = line.strip("/* ").strip("*/").strip()
                 if block_line:
@@ -197,13 +207,11 @@ class FBSParser:
                 r"(\w+)\s*:\s*([\w\[\]]+)(\s*=\s*[^()]+)?(\s*\([^)]*\))?", line
             ):
                 name, ftype, default, meta = match.groups()
-                ftype = ftype.strip()
                 fields[name] = {
-                    "type": ftype,
+                    "type": ftype.strip(),
                     "default": default.strip(" =") if default else None,
                     "metadata": meta.strip("()") if meta else None,
                     "doc": "\n".join(current_doc).strip() if current_doc else None,
-                    "ref": ftype if ftype in local_types else None,
                 }
                 current_doc = []
         return fields
@@ -304,9 +312,10 @@ class HTMLDocGenerator:
     def generate(self, output_file: str):
         env = Environment(loader=FileSystemLoader("."))
         template = env.from_string("""<!DOCTYPE html><html>
-<head>
-    <meta charset="UTF-8">
-    <title>{{ info.title }} - API Docs</title>
+                                   <head>
+                                   <meta charset="UTF-8">
+                                   <title>{{ info.title }} - API Docs</title>
+                                   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=keyboard_arrow_down" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="p-5">
@@ -344,23 +353,24 @@ class HTMLDocGenerator:
                 <h6>Accepts the following message:</h6>
                 <ul class="list-group">
                 {% for m in op.messages %} 
-                    <li class="list-group-item p-4" style="background-color:#edf2f7; box-shadow: 0.5px 0.5px 5px rgba(169,169,169,0.5);">
+                    <li class="list-group-item p-3" style="background-color:#edf2f7; box-shadow: 0.5px 0.5px 5px rgba(169,169,169,0.5);">
                         <div class="p-3 border rounded" style="background-color:#f7fafc">
                             <span>Message ID</span><span class='text-white ms-3 p-1 rounded-1' style="background-color:#FF7440">{{ m.schema }}</span>
                         </div>
                         {% if m.fbs_def %}
-                        <div class="mt-2 pt-3">
+                        <div class="mt-1 pt-3">
 
                             {# ----------- Structs ----------- #}
                             {% if m.fbs_def.structs %}
                                 {% for sname, sfields in m.fbs_def.structs.items() %}
                                     <div class="mb-4">
-                                        <span>Payload </span>
-                                        <span class="fw-bold" style="color:#3AB3AD">{{ sname }}</span>
-                                        {% if sfields.doc %}
-                                            <p class="text-muted small mb-2">{{ sfields.doc }}</p>
-                                        {% endif %}
-
+                                        <div class="mb-2">
+                                            <span>Payload - </span>
+                                            <span class="fw-bold" style="color:#3AB3AD">{{ sname }}</span>
+                                            {% if sfields.doc %}
+                                                <p class="text-muted small mb-2">{{ sfields.doc }}</p>
+                                            {% endif %}
+                                        </div>
                                         <div class="p-3 border rounded" style="background-color:#f7fafc">
                                             <table class="table-borderless">
                                                 <tbody>
@@ -368,12 +378,7 @@ class HTMLDocGenerator:
                                                     <tr>
                                                         <td style="width: 250px;">{{ fname }}</td>
                                                         <td>
-                                                            <i class="fw-bold" style="color:#3AB3AD">{{ fdata.type }}</i>
-
-                                                            {# If this type is a derived reference, highlight it #}
-                                                            {% if fdata.ref %}
-                                                                <span class="badge bg-secondary ms-2">Ref → {{ fdata.ref }}</span>
-                                                            {% endif %}
+                                                            <i class="fw-bold" style="color:#3AB3AD">{{ fdata.type | capitalize }}</i>
 
                                                             {% if fdata.doc %}
                                                                 <div class="text-muted small">{{ fdata.doc }}</div>
@@ -392,11 +397,13 @@ class HTMLDocGenerator:
                             {% if m.fbs_def.tables %}
                                 {% for tname, tfields in m.fbs_def.tables.items() %}
                                     <div class="mb-4">
-                                        <span>Payload </span>
-                                        <span class="fw-bold" style="color:#3AB3AD">{{ tname }}</span>
-                                        {% if tfields.doc %}
-                                            <p class="text-muted small mb-2">{{ tfields.doc }}</p>
-                                        {% endif %}
+                                        <div class="mb-2">
+                                            <span>Payload - </span>
+                                            <span class="fw-bold" style="color:#3AB3AD">{{ tname }}</span>
+                                            {% if tfields.doc %}
+                                                <p class="text-muted small mb-2">{{ tfields.doc }}</p>
+                                            {% endif %}
+                                        </div>
 
                                         <div class="p-3 border rounded" style="background-color:#f7fafc">
                                             <table class="table-borderless">
@@ -405,12 +412,7 @@ class HTMLDocGenerator:
                                                     <tr>
                                                         <td style="width: 250px;">{{ fname }}</td>
                                                         <td>
-                                                            <i class="fw-bold" style="color:#3AB3AD">{{ fdata.type }}</i>
-
-                                                            {# Show derived type reference if available #}
-                                                            {% if fdata.ref %}
-                                                                <span class="badge bg-secondary ms-2">Ref → {{ fdata.ref }}</span>
-                                                            {% endif %}
+                                                            <i class="fw-bold" style="color:#3AB3AD">{{ fdata.type | capitalize }}</i>
 
                                                             {% if fdata.doc %}
                                                                 <div class="text-muted small">{{ fdata.doc }}</div>
@@ -574,4 +576,10 @@ def generate_all(asyncapi_path: str, fbs_dir: str, output_dir: str):
 
 # ---------------- Entry Point ----------------
 if __name__ == "__main__":
-    generate_all(asyncapi_path="./api", fbs_dir="./flatbuffers", output_dir="./docs")
+    parser = argparse.ArgumentParser(description="AsyncAPI + FlatBuffers doc generator")
+    parser.add_argument("--api", required=True, help="Path to AsyncAPI files")
+    parser.add_argument("--fbs", required=True, help="Path to FlatBuffer schema files")
+    parser.add_argument("--output", required=True, help="Path to output HTML docs")
+    args = parser.parse_args()
+
+    generate_all(asyncapi_path=args.api, fbs_dir=args.fbs, output_dir=args.output)
